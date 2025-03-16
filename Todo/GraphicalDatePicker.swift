@@ -12,14 +12,16 @@ struct GraphicalDatePicker: View {
     @Binding var selectedDate: Date?
     @Binding var isDatePickerShown: Bool
     @State var savedDate = Date()
+    var displayedComponents: DatePicker<Label>.Components = [.hourAndMinute, .date]
     
     var body: some View {
         ZStack {
             OverlayBackground(isShown: $isDatePickerShown)
             VStack {
-                DatePicker("",
-                           selection: $savedDate,
-                           displayedComponents: [.date, .hourAndMinute]
+                DatePicker(
+                    "",
+                    selection: $savedDate,
+                    displayedComponents: displayedComponents
                 )
                 .datePickerStyle(.graphical)
                 Divider()
@@ -33,11 +35,18 @@ struct GraphicalDatePicker: View {
                         isDatePickerShown = false
                     }
                     .padding()
+                    if let _ = selectedDate {
+                        Button("Delete", role: .destructive) {
+                            selectedDate = nil
+                            isDatePickerShown = false
+                        }
+                        .padding()
+                    }
                 }
             }
             .frame(maxWidth: 400)
             .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 30))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             .shadow(radius: 4)
             // 領域内タップがオーバーレイ背景に伝播するのを防ぐため
             .onTapGesture {}

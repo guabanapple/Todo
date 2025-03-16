@@ -18,16 +18,19 @@ struct TodoList: View {
             if !todos.isEmpty {
                 List() {
                     ForEach(todos) { todo in
+                        // TODO: 今日じゃないものはここに表示しない
                         HStack {
                             @Bindable var bt = todo
                             Toggle(isOn: $bt.isDone) {
+                                Text(todo.title)
                             }
                             .toggleStyle(.checkBox)
                             
-                            // decoration of title
-                            todo.isDone
-                            ? Text(todo.title).strikethrough().tag(todo.id)
-                            : Text(todo.title).tag(todo.id)
+                            if todo.notes != nil {
+                                noteIcon
+                            }
+                            // TODO: limitDate
+                            // TODO: tags
                         }
                     }
                     .onMove(perform: moveRow)
@@ -39,6 +42,14 @@ struct TodoList: View {
                 Spacer()
             }
         }
+    }
+    
+    private var noteIcon: some View {
+        Image(systemName: "list.clipboard")
+            .resizable()
+            .scaledToFit()
+            .frame(height: 16)
+            .foregroundColor(.secondary)
     }
     
     private func moveRow(from source: IndexSet, to destination: Int) {
