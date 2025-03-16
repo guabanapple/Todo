@@ -6,19 +6,22 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct TodoList: View {
     @Environment(\.modelContext) var context
+    private static let today = Date.now
+    @Query var todos: [TodoItem]
     @Binding var isEditing: Bool
     @Binding var selectedTodo: TodoItem?
-    @State var todos: [TodoItem]      // 生の変数なら？
     var mode: DisplayMode
     
     var body: some View {
         VStack {
-            if !todos.isEmpty {
+            let items = getTodo(for: mode)
+            if !items.isEmpty {
                 List {
-                    ForEach(todos) { todo in
+                    ForEach(items) { todo in
                         HStack {
                             @Bindable var bt = todo
                             Toggle(isOn: $bt.isDone) {}
@@ -45,6 +48,7 @@ struct TodoList: View {
                 }
                 .scrollContentBackground(.hidden)
             } else {
+                Spacer()
                 Text("No todo items.")
                 Spacer()
             }
@@ -65,6 +69,17 @@ struct TodoList: View {
     
     private func deleteRow(offsets: IndexSet) {
         context.delete(todos[offsets.first!])
+    }
+    
+    private func getTodo(for mode: DisplayMode) -> [TodoItem] {
+        switch mode {
+        case .future:
+            return todos.filter({ $0.remindDate.isFutureDate() })
+        case .today:
+            return todos.filter({ $0.remindDate.isSameDate(as: Date()) })
+        case .past:
+            return todos.filter({ $0.remindDate.isPastDate() })
+        }
     }
 }
 

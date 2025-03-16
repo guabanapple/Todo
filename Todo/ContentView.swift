@@ -9,9 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) var context
-    @Query var todos: [TodoItem]
-    @State var todoItem: TodoItem? = nil
+    @State var selectedTodo: TodoItem?
     @State var isNewDialogShown: Bool = false
     @State var isEditDialogShown: Bool = false
     @State var selectedTab: Int = 1
@@ -38,7 +36,7 @@ struct ContentView: View {
                 TabView(selection: $selectedTab) {
                     ForEach(Array(modes.enumerated()), id: \.element) { index, element in
                         VStack {
-                            TodoList(isEditing: $isEditDialogShown, selectedTodo: $todoItem, todos: todos, mode: element)
+                            TodoList(isEditing: $isEditDialogShown, selectedTodo: $selectedTodo, mode: element)
                         }
                         .tag(index)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -57,11 +55,10 @@ struct ContentView: View {
                         .clipShape(.buttonBorder)
                 }
             }
-            //                .navigationTitle("Todo")
             if isNewDialogShown {
                 NewItemView(isPresented: $isNewDialogShown)
             }
-            if let item = todoItem, isEditDialogShown {
+            if let item = selectedTodo, isEditDialogShown {
                 EditItemView(isPresented: $isEditDialogShown, todo: item)
             }
         }

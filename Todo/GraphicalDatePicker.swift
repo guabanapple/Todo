@@ -12,7 +12,6 @@ struct GraphicalDatePicker: View {
     @Binding var selectedDate: Date?
     @Binding var isDatePickerShown: Bool
     @State var savedDate = Date()
-    var displayedComponents: DatePicker<Label>.Components = [.hourAndMinute, .date]
     
     var body: some View {
         ZStack {
@@ -21,7 +20,7 @@ struct GraphicalDatePicker: View {
                 DatePicker(
                     "",
                     selection: $savedDate,
-                    displayedComponents: displayedComponents
+                    displayedComponents: .date
                 )
                 .datePickerStyle(.graphical)
                 Divider()

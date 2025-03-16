@@ -30,23 +30,10 @@ struct NewItemView: View {
             limitDatePickerShown: $limitDatePickerShown
         ) {
             // validation
-            if isInvalid() { return }
             let titleValue = TodoUtils.trim(todoTitleInput).isEmpty ? "New Todo" : todoTitleInput
             let noteValue = TodoUtils.trim(noteInput).isEmpty ? nil : noteInput
-            
-            let item = TodoItem(title: titleValue, notes: noteValue, remindDate: remindDate, limit: limitDate)
+            let item = TodoItem(title: titleValue, notes: noteValue, remindDate: remindDate ?? Date(), limit: limitDate)
             context.insert(item)
         }
-    }
-    
-    
-    
-    // 全てが空（入力も選択もされていない）場合のみ Invalid とみなす
-    private func isInvalid() -> Bool {
-        let isTitleEmp = TodoUtils.trim(todoTitleInput).isEmpty
-        let isNoteEmp = TodoUtils.trim(noteInput).isEmpty
-        let isSelectedDateEmp = remindDate == nil && limitDate == nil
-        // TODO: tag
-        return isTitleEmp && isNoteEmp && isSelectedDateEmp
     }
 }

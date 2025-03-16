@@ -42,7 +42,7 @@ struct EditItemView: View {
       if isInvalid() { return }
       todo.title = TodoUtils.trim(todoTitleInput).isEmpty ? "New Todo" : todoTitleInput
       todo.notes = TodoUtils.trim(noteInput).isEmpty ? nil : noteInput
-      todo.remindDate = remindDate
+      todo.remindDate = remindDate!
       todo.limit = limitDate
     }
     .addDeleteButton {

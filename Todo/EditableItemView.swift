@@ -95,8 +95,7 @@ struct EditableItemView: View {
                     $limitDatePickerShown,
                     content: {
                         GraphicalDatePicker(
-                            selectedDate: $limitDate, isDatePickerShown: $limitDatePickerShown,
-                            displayedComponents: .date
+                            selectedDate: $limitDate, isDatePickerShown: $limitDatePickerShown
                         )
                     }
                 )
