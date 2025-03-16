@@ -46,7 +46,8 @@ struct EditItemView: View {
       todo.limit = limitDate
     }
     .addDeleteButton {
-        print("deletebutton")
+        isPresented = false
+        context.delete(todo)
     }
   }
 

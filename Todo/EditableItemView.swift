@@ -56,14 +56,13 @@ struct EditableItemView: View {
                         if limitDate == nil {
                             Button(action: {
                                 limitDatePickerShown = true
-                                print("showDeleteBVutton?: \(showDeleteButton)")
                             }, label: {
                                 Image(systemName: "flag.circle")
                             })
                         }
                         if showDeleteButton {
                             Button(action: {
-                                print("deletebutton")
+                                onDelete?()
                             }, label: {
                                 Image(systemName: "trash")
                             })
@@ -121,7 +120,7 @@ struct EditableItemView: View {
 extension EditableItemView {
     func addDeleteButton(action: @escaping () -> Void) -> some View {
         var view = self
-        view.showDeleteButton = true
+        view._showDeleteButton = State(initialValue: true)
         view.onDelete = action
         return view
     }

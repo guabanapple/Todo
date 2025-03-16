@@ -9,32 +9,60 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @Environment(\.modelContext) var context
+    @Query var todos: [TodoItem]
     @State var todoItem: TodoItem? = nil
-    @State var isNewItemViewShown: Bool = false
-    @State var isEditItemViewShown: Bool = false
+    @State var isNewDialogShown: Bool = false
+    @State var isEditDialogShown: Bool = false
+    @State var selectedTab: Int = 1
+    private var modes: [DisplayMode] = [.past, .today, .future]
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                VStack {
-                    TodoList(isEditing: $isEditItemViewShown, selectedTodo: $todoItem)
-                    Button {
-                        isNewItemViewShown.toggle()
-                    } label: {
-                        Image(systemName: "plus")
-                            .padding()
-                            .foregroundStyle(.white)
-                            .background(Color.blue)
-                            .clipShape(.buttonBorder)
+        ZStack {
+            VStack {
+                HStack(spacing: 20) {
+                    ForEach(Array(modes.enumerated()), id: \.element) { index, element in
+                        Text("\(element)")
+                            .font(.headline)
+                            .foregroundColor(selectedTab == index ? .blue : .gray)
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 15)
+                            .onTapGesture {
+                                withAnimation { selectedTab = index }
+                            }
                     }
                 }
-                .navigationTitle("Todo")
-                if isNewItemViewShown {
-                    NewItemView(isPresented: $isNewItemViewShown)
+                .padding(.horizontal, 10)
+                
+                Divider()
+                TabView(selection: $selectedTab) {
+                    ForEach(Array(modes.enumerated()), id: \.element) { index, element in
+                        VStack {
+                            TodoList(isEditing: $isEditDialogShown, selectedTodo: $todoItem, todos: todos, mode: element)
+                        }
+                        .tag(index)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.white)
+                    }
                 }
-                if let item = todoItem, isEditItemViewShown {
-                    EditItemView(isPresented: $isEditItemViewShown, todo: item)
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                // View for display NewItemView
+                Button {
+                    isNewDialogShown.toggle()
+                } label: {
+                    Image(systemName: "plus")
+                        .padding()
+                        .foregroundStyle(.white)
+                        .background(Color.blue)
+                        .clipShape(.buttonBorder)
                 }
+            }
+            //                .navigationTitle("Todo")
+            if isNewDialogShown {
+                NewItemView(isPresented: $isNewDialogShown)
+            }
+            if let item = todoItem, isEditDialogShown {
+                EditItemView(isPresented: $isEditDialogShown, todo: item)
             }
         }
     }

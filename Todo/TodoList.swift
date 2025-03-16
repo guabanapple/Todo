@@ -5,51 +5,48 @@
 //  Created by NAKASUJI HIROKI on 2025/02/24.
 //
 
-import SwiftData
 import SwiftUI
 
 struct TodoList: View {
     @Environment(\.modelContext) var context
-    @Query private var todos: [TodoItem]
     @Binding var isEditing: Bool
     @Binding var selectedTodo: TodoItem?
+    @State var todos: [TodoItem]      // 生の変数なら？
+    var mode: DisplayMode
     
     var body: some View {
-        ZStack {
-            VStack {
-                if !todos.isEmpty {
-                    List {
-                        ForEach(todos) { todo in
-                            // TODO: 今日じゃないものはここに表示しない
+        VStack {
+            if !todos.isEmpty {
+                List {
+                    ForEach(todos) { todo in
+                        HStack {
+                            @Bindable var bt = todo
+                            Toggle(isOn: $bt.isDone) {}
+                                .toggleStyle(.checkBox)
+                                .padding(5)
+                                .zIndex(1)
                             HStack {
-                                @Bindable var bt = todo
-                                Toggle(isOn: $bt.isDone) {}
-                                    .toggleStyle(.checkBox)
-                                    .zIndex(1)
-                                HStack {
-                                    Text(todo.title)
-                                    if todo.notes != nil {
-                                        noteIcon
-                                    }
-                                    // TODO: limitDate
-                                    // TODO: tags
+                                Text(todo.title)
+                                if todo.notes != nil {
+                                    noteIcon
                                 }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    selectedTodo = todo
-                                    isEditing = true
-                                }
+                                // TODO: limitDate
+                                // TODO: tags
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                selectedTodo = todo
+                                isEditing = true
                             }
                         }
-                        .onMove(perform: moveRow)
-                        //          .onDelete(perform: deleteRow)
                     }
-                    .scrollContentBackground(.hidden)
-                } else {
-                    Text("No todo items.")
-                    Spacer()
+                    .onMove(perform: moveRow)
                 }
+                .scrollContentBackground(.hidden)
+            } else {
+                Text("No todo items.")
+                Spacer()
             }
         }
     }
@@ -69,4 +66,10 @@ struct TodoList: View {
     private func deleteRow(offsets: IndexSet) {
         context.delete(todos[offsets.first!])
     }
+}
+
+enum DisplayMode: Hashable {
+    case future
+    case today
+    case past
 }
