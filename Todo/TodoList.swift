@@ -5,41 +5,51 @@
 //  Created by NAKASUJI HIROKI on 2025/02/24.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct TodoList: View {
     @Environment(\.modelContext) var context
     @Query private var todos: [TodoItem]
-    @State private var newTodoTitle: String = ""
+    @Binding var isEditing: Bool
+    @Binding var selectedTodo: TodoItem?
     
     var body: some View {
-        VStack {
-            if !todos.isEmpty {
-                List() {
-                    ForEach(todos) { todo in
-                        // TODO: 今日じゃないものはここに表示しない
-                        HStack {
-                            @Bindable var bt = todo
-                            Toggle(isOn: $bt.isDone) {
-                                Text(todo.title)
+        ZStack {
+            VStack {
+                if !todos.isEmpty {
+                    List {
+                        ForEach(todos) { todo in
+                            // TODO: 今日じゃないものはここに表示しない
+                            HStack {
+                                @Bindable var bt = todo
+                                Toggle(isOn: $bt.isDone) {}
+                                    .toggleStyle(.checkBox)
+                                    .zIndex(1)
+                                HStack {
+                                    Text(todo.title)
+                                    if todo.notes != nil {
+                                        noteIcon
+                                    }
+                                    // TODO: limitDate
+                                    // TODO: tags
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    selectedTodo = todo
+                                    isEditing = true
+                                }
                             }
-                            .toggleStyle(.checkBox)
-                            
-                            if todo.notes != nil {
-                                noteIcon
-                            }
-                            // TODO: limitDate
-                            // TODO: tags
                         }
+                        .onMove(perform: moveRow)
+                        //          .onDelete(perform: deleteRow)
                     }
-                    .onMove(perform: moveRow)
-                    .onDelete(perform: deleteRow)
+                    .scrollContentBackground(.hidden)
+                } else {
+                    Text("No todo items.")
+                    Spacer()
                 }
-                .scrollContentBackground(.hidden)
-            } else {
-                Text("No todo items.")
-                Spacer()
             }
         }
     }

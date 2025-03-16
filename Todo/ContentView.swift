@@ -9,13 +9,15 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @State private var isNewItemViewShown: Bool = false
+    @State var todoItem: TodoItem? = nil
+    @State var isNewItemViewShown: Bool = false
+    @State var isEditItemViewShown: Bool = false
     
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack {
-                    TodoList()
+                    TodoList(isEditing: $isEditItemViewShown, selectedTodo: $todoItem)
                     Button {
                         isNewItemViewShown.toggle()
                     } label: {
@@ -29,6 +31,9 @@ struct ContentView: View {
                 .navigationTitle("Todo")
                 if isNewItemViewShown {
                     NewItemView(isPresented: $isNewItemViewShown)
+                }
+                if let item = todoItem, isEditItemViewShown {
+                    EditItemView(isPresented: $isEditItemViewShown, todo: item)
                 }
             }
         }
